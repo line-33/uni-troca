@@ -105,11 +105,70 @@
       font-size: 0.95rem;
     }
 
+    /* Estilos para Mostrar/Ocultar Senha */
+    .password-toggle-group {
+      position: relative;
+    }
+    .password-toggle-group input {
+      width: 100%;
+      padding-right: 40px; /* Espaço para o ícone */
+    }
+    .btn-toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      opacity: 0.7;
+    }
+    .btn-toggle-password:hover {
+      opacity: 1;
+    }
+
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
       outline: none;
       border-color: var(--primary);
+    }
+
+    .checkbox-group {
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: var(--radius);
+    }
+
+    .checkbox-group input {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .checkbox-group label {
+      margin-bottom: 0;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #imagePreviewContainer {
+      margin-top: 10px;
+      display: none;
+    }
+
+    #imagePreviewContainer img {
+      max-width: 150px;
+      max-height: 150px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
     }
 
     .btn {
@@ -122,7 +181,7 @@
       transition: background 0.2s;
     }
 
-    .btn-primary { background-color: var(--primary); color: white; }
+    .btn-primary { background-color: var(--primary); color: white; margin-top: 10px; }
     .btn-primary:hover { background-color: var(--primary-hover); }
 
     .btn-whatsapp {
@@ -201,7 +260,7 @@
     .empty-state { text-align: center; color: var(--text-muted); padding: 30px; grid-column: 1 / -1; }
 
     footer { text-align: center; padding: 20px; font-size: 0.85rem; color: var(--text-muted); }
-
+    
     .btn-manage {
       position: absolute;
       top: 10px;
@@ -265,6 +324,55 @@
     .default-img-opt input[type="radio"] {
       margin-bottom: 5px;
     }
+
+    /* Estilos para Modal Customizada */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 25px;
+      max-width: 400px;
+      width: 90%;
+      border: 1px solid var(--border);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      animation: modalFadeIn 0.3s ease-out;
+    }
+    .modal-card h2 {
+      font-size: 1.3rem;
+      color: var(--primary);
+      margin-bottom: 15px;
+      border-bottom: 2px solid var(--bg);
+      padding-bottom: 8px;
+    }
+    .modal-card p {
+      margin-bottom: 15px;
+    }
+    .modal-card .btn-manage-modal {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      text-align: center;
+    }
+    .btn-danger { background-color: #dc3545; color: white; }
+    .btn-danger:hover { background-color: #a71d2a; }
+    .btn-muted { background-color: #6c757d; color: white; }
+    .btn-muted:hover { background-color: #495057; }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
@@ -310,32 +418,62 @@
 
           <div class="form-group">
             <label for="senhaSeguranca">Senha (Para Editar/Apagar)*</label>
-            <input type="password" id="senhaSeguranca" placeholder="Crie um PIN (ex: 1234)" maxlength="8" required>
+            <div class="password-toggle-group">
+              <input type="password" id="senhaSeguranca" placeholder="Crie um PIN (ex: 1234)" maxlength="8" required>
+              <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('senhaSeguranca', this)">👁️</button>
+            </div>
           </div>
 
           <div class="form-group full-width">
-            <label for="imagem">URL da Foto (Opcional)</label>
+            <label for="imagem">URL da Foto Externa (Opcional)</label>
             <input type="url" id="imagem" placeholder="Cole o link da imagem se tiver">
+            <div id="imagePreviewContainer">
+              <img id="imagePreview" src="" alt="Pré-visualização" onerror="this.parentElement.style.display='none';">
+            </div>
           </div>
 
           <div class="form-group full-width">
-            <label>Ou escolha uma imagem padrão:</label>
+            <label>Ou escolha uma imagem padrão do sistema:</label>
             <div class="default-image-options">
               <label class="default-img-opt">
-                <input type="radio" name="default_image_choice" value="img_agasalho_default">
+                <input type="radio" name="default_image_choice" value="Gemini_Generated_Image_7s170u7s170u7s17.jpeg">
                 Agasalho
               </label>
               <label class="default-img-opt">
-                <input type="radio" name="default_image_choice" value="img_material_default">
-                Material
+                <input type="radio" name="default_image_choice" value="Gemini_Generated_Image_losswtlosswtloss.jpeg">
+                Livros
               </label>
               <label class="default-img-opt">
-                <input type="radio" name="default_image_choice" value="img_calca_default">
+                <input type="radio" name="default_image_choice" value="Gemini_Generated_Image_ksl39bksl39bksl3.jpeg">
                 Calça
               </label>
               <label class="default-img-opt">
-                <input type="radio" name="default_image_choice" value="img_mochila_default">
+                <input type="radio" name="default_image_choice" value="Gemini_Generated_Image_fewppufewppufewp.jpeg">
                 Mochila
+              </label>
+              <label class="default-img-opt">
+                <input type="radio" name="default_image_choice" value="Gemini_Generated_Image_o2uwaao2uwaao2uw.jpeg">
+                Camiseta
+              </label>
+              <label class="default-img-opt">
+                <input type="radio" name="default_image_choice" value="tenis.png">
+                Tênis
+              </label>
+              <label class="default-img-opt">
+                <input type="radio" name="default_image_choice" value="jaleco.png">
+                Jaleco
+              </label>
+              <label class="default-img-opt">
+                <input type="radio" name="default_image_choice" value="calculadora.png">
+                Engenharia
+              </label>
+              <label class="default-img-opt">
+                <input type="radio" name="default_image_choice" value="cadernos.png">
+                Papelaria
+              </label>
+              <label class="default-img-opt">
+                <input type="radio" name="default_image_choice" value="esporte.png">
+                Esporte
               </label>
               <label class="default-img-opt">
                 <input type="radio" name="default_image_choice" value="img_nenhuma" checked>
@@ -343,10 +481,15 @@
               </label>
             </div>
           </div>
-
+          
           <div class="form-group full-width">
             <label for="descricao">Descrição do Estado do Item*</label>
             <textarea id="descricao" rows="2" placeholder="Ex: Usado por 6 meses, em ótimo estado sem rasgos." required></textarea>
+          </div>
+
+          <div class="form-group full-width checkbox-group">
+            <input type="checkbox" id="termoResponsabilidade" required>
+            <label for="termoResponsabilidade">Confirmo que o item está higienizado e em boas condições de uso para a comunidade.</label>
           </div>
 
           <div class="full-width">
@@ -366,6 +509,19 @@
           <option value="Uniforme">Apenas Uniformes</option>
           <option value="Material">Apenas Materiais</option>
         </select>
+        <select id="filterTamanho">
+          <option value="">Qualquer Tamanho/Ano</option>
+          <option value="P">Tamanho P</option>
+          <option value="M">Tamanho M</option>
+          <option value="G">Tamanho G</option>
+          <option value="GG">Tamanho GG</option>
+          <option value="Único">Tamanho Único</option>
+          <option value="6º">6º Ano</option>
+          <option value="7º">7º Ano</option>
+          <option value="8º">8º Ano</option>
+          <option value="9º">9º Ano</option>
+          <option value="Médio">Ensino Médio</option>
+        </select>
       </div>
 
       <div class="items-grid" id="itemsGrid">
@@ -380,6 +536,55 @@
     <p>Desenvolvido por Aline Tais Nogueira & Leandro Silva da Luz Oliveira</p>
   </footer>
 
+  <!-- Modal Customizada para Gerenciamento -->
+  <div class="modal-overlay" id="pinModal">
+    <div class="modal-card">
+      <h2>🔒 Área Segura</h2>
+      <p>Digite a senha deste anúncio (ou a senha mestra 1234):</p>
+      <div class="form-group password-toggle-group" style="margin-bottom: 20px;">
+        <input type="password" id="modalPinDigitado" placeholder="Digite o PIN" maxlength="8">
+        <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('modalPinDigitado', this)">👁️</button>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button type="button" class="btn btn-primary btn-manage-modal" onclick="verificarPinModal()">Acessar</button>
+        <button type="button" class="btn btn-muted btn-manage-modal" onclick="fecharModalPin()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="manageModal">
+    <div class="modal-card">
+      <h2>⚙️ GERENCIAR ANÚNCIO</h2>
+      <p>Escolha a opção desejada:</p>
+      <button type="button" class="btn btn-success btn-manage-modal" onclick="marcarConcluidoModal()">✅ Marcar como "Troca Realizada / Doado"</button>
+      <button type="button" class="btn btn-primary btn-manage-modal" onclick="abrirEdicaoModal()">✏️ Editar Título, Tamanho e Descrição</button>
+      <button type="button" class="btn btn-danger btn-manage-modal" onclick="excluirAnuncioModal()">🗑️ Excluir Anúncio Definitivamente</button>
+      <button type="button" class="btn btn-muted btn-manage-modal" onclick="fecharModalManage()">Fechar</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="editModal">
+    <div class="modal-card">
+      <h2>✏️ EDITAR ANÚNCIO</h2>
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label for="editTituloModal">Novo Título:</label>
+        <input type="text" id="editTituloModal">
+      </div>
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label for="editTamanhoModal">Novo Tamanho / Ano Escolar:</label>
+        <input type="text" id="editTamanhoModal">
+      </div>
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label for="editDescricaoModal">Nova Descrição:</label>
+        <textarea id="editDescricaoModal" rows="3"></textarea>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button type="button" class="btn btn-primary btn-manage-modal" onclick="salvarEdicaoModal()">Salvar</button>
+        <button type="button" class="btn btn-muted btn-manage-modal" onclick="fecharModalEdit()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const initialItems = [
       {
@@ -389,7 +594,7 @@
         escola: "E.E. Padre Anchieta",
         tamanho: "Tamanho 12",
         whatsapp: "11999998888",
-        imagem: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&auto=format&fit=crop&q=60",
+        imagem: "Gemini_Generated_Image_7s170u7s170u7s17.jpeg",
         descricao: "Jaqueta do uniforme oficial em ótimo estado, zíper funcionando perfeitamente.",
         senha: "1234",
         concluido: false
@@ -401,7 +606,7 @@
         escola: "Região Leste",
         tamanho: "6º Ano Fundamental",
         whatsapp: "11988887777",
-        imagem: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=500&auto=format&fit=crop&q=60",
+        imagem: "Gemini_Generated_Image_losswtlosswtloss.jpeg",
         descricao: "Coleção de livros de Português e Matemática sem rasuras ou anotações a caneta.",
         senha: "1234",
         concluido: false
@@ -413,20 +618,24 @@
         escola: "E.M.E.F. Paulo Freire",
         tamanho: "Único",
         whatsapp: "11977776666",
-        imagem: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&auto=format&fit=crop&q=60",
+        imagem: "Gemini_Generated_Image_fewppufewppufewp.jpeg",
         descricao: "Mochila reforçada com compartimento para cadernos grandes. Usada apenas um semestre.",
+        senha: "1234",
+        concluido: false
+      },
+      {
+        id: 4,
+        titulo: "Camiseta Uniforme",
+        categoria: "Uniforme",
+        escola: "Região Central",
+        tamanho: "Tamanho M",
+        whatsapp: "11966665555",
+        imagem: "Gemini_Generated_Image_o2uwaao2uwaao2uw.jpeg",
+        descricao: "Camiseta de uniforme limpa e sem manchas, pronta para uso.",
         senha: "1234",
         concluido: false
       }
     ];
-
-    const defaultImages = {
-      img_agasalho_default: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&auto=format&fit=crop&q=60',
-      img_material_default: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=500&auto=format&fit=crop&q=60',
-      img_calca_default: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500&auto=format&fit=crop&q=60',
-      img_mochila_default: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&auto=format&fit=crop&q=60',
-      img_nenhuma: ''
-    };
 
     let items = [];
     try {
@@ -445,20 +654,53 @@
     const itemForm = document.getElementById('itemForm');
     const searchInput = document.getElementById('searchInput');
     const filterCategory = document.getElementById('filterCategory');
+    const filterTamanho = document.getElementById('filterTamanho');
+    
+    // Pré-visualização de imagem
+    const imagemInput = document.getElementById('imagem');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    const imagePreview = document.getElementById('imagePreview');
+
+    imagemInput.addEventListener('input', () => {
+      const url = imagemInput.value.trim();
+      if (url) {
+        imagePreview.src = url;
+        imagePreviewContainer.style.display = 'block';
+        imagePreview.style.display = 'block';
+      } else {
+        imagePreviewContainer.style.display = 'none';
+      }
+    });
+
+    // Função para mostrar/ocultar senha
+    window.togglePasswordVisibility = function(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (input.type === "password") {
+        input.type = "text";
+        btn.textContent = "🙈";
+      } else {
+        input.type = "password";
+        btn.textContent = "👁️";
+      }
+    };
 
     function renderItems() {
       const searchTerm = (searchInput.value || "").toLowerCase();
       const selectedCategory = filterCategory.value;
+      const selectedTamanho = filterTamanho.value.toLowerCase();
 
       const filtered = items.filter(item => {
         if(!item) return false;
         const titulo = (item.titulo || "").toLowerCase();
         const escola = (item.escola || "").toLowerCase();
         const descricao = (item.descricao || "").toLowerCase();
+        const tamanhoStr = (item.tamanho || "").toLowerCase();
 
         const matchesSearch = titulo.includes(searchTerm) || escola.includes(searchTerm) || descricao.includes(searchTerm);
         const matchesCategory = selectedCategory === 'TODOS' || item.categoria === selectedCategory;
-        return matchesSearch && matchesCategory;
+        const matchesTamanho = selectedTamanho === '' || tamanhoStr.includes(selectedTamanho);
+        
+        return matchesSearch && matchesCategory && matchesTamanho;
       });
 
       itemsGrid.innerHTML = '';
@@ -486,7 +728,7 @@
         }
 
         card.innerHTML = `
-          <button class="btn-manage" onclick="gerenciarItem(${item.id})" title="Gerenciar Anúncio">⚙️</button>
+          <button class="btn-manage" onclick="gerenciarItemCustom(${item.id})" title="Gerenciar Anúncio">⚙️</button>
           
           <img src="${imgUrl}" class="item-image" onerror="this.src='https://via.placeholder.com/300x180/e0e0e0/6c757d?text=Sem+Foto'">
           <div class="item-content">
@@ -505,57 +747,110 @@
       });
     }
 
-    // GERENCIAMENTO COM SENHA MESTRA (1234)
-    window.gerenciarItem = function(id) {
-      const itemIndex = items.findIndex(i => i.id === id);
-      if(itemIndex === -1) return;
-      const item = items[itemIndex];
+    // Variáveis para controlar qual item está sendo gerenciado nas modais
+    let itemSendoGerenciado = null;
 
-      const pinDigitado = prompt("🔒 Área Segura\nDigite a senha deste anúncio (ou a senha mestra 1234):");
-      if (pinDigitado === null) return; // Cancelou
+    window.gerenciarItemCustom = function(id) {
+      itemSendoGerenciado = items.find(i => i.id === id);
+      if(!itemSendoGerenciado) return;
+      document.getElementById('modalPinDigitado').value = ""; // Limpa PIN anterior
+      document.getElementById('pinModal').style.display = 'flex';
+    };
 
-      // REGRA DE SENHA MESTRA: "1234" SEMPRE LIBERA O ACESSO
+    window.fecharModalPin = function() {
+      document.getElementById('pinModal').style.display = 'none';
+      itemSendoGerenciado = null;
+    };
+
+    window.verificarPinModal = function() {
+      const pinDigitado = document.getElementById('modalPinDigitado').value;
+      if (pinDigitado === null || pinDigitado === "") {
+        alert("Digite o PIN.");
+        return;
+      }
+
       const eSenhaMestra = (pinDigitado === '1234');
-      const eSenhaCorreta = (item.senha && pinDigitado === item.senha);
-      const eItemAntigoSemSenha = (!item.senha);
+      const eSenhaCorreta = (itemSendoGerenciado.senha && pinDigitado === itemSendoGerenciado.senha);
+      const eItemAntigoSemSenha = (!itemSendoGerenciado.senha);
 
       if (!eSenhaMestra && !eSenhaCorreta && !eItemAntigoSemSenha) {
         alert("❌ Senha incorreta! Você não tem permissão para alterar este item.");
         return;
       }
 
-      // Menu de Opções
-      const opcao = prompt(`⚙️ GERENCIAR ANÚNCIO:\n\nDigite o número da opção desejada:\n\n1 - Marcar como "Troca Realizada / Doado"\n2 - Excluir Anúncio Definitivamente\n3 - Editar Título e Descrição`);
+      fecharModalPin(); // Fecha modal PIN
+      document.getElementById('manageModal').style.display = 'flex'; // Abre modal de opções
+    };
 
-      if (opcao === '1') {
-        items[itemIndex].concluido = true;
+    window.fecharModalManage = function() {
+      document.getElementById('manageModal').style.display = 'none';
+      itemSendoGerenciado = null;
+    };
+
+    window.marcarConcluidoModal = function() {
+      if(!itemSendoGerenciado) return;
+      const itemIndex = items.findIndex(i => i.id === itemSendoGerenciado.id);
+      if(itemIndex === -1) return;
+
+      items[itemIndex].concluido = true;
+      localStorage.setItem('unitroca_items', JSON.stringify(items));
+      renderItems();
+      alert("✅ Anúncio marcado como concluído!");
+      fecharModalManage();
+    };
+
+    window.excluirAnuncioModal = function() {
+      if(!itemSendoGerenciado) return;
+      const itemIndex = items.findIndex(i => i.id === itemSendoGerenciado.id);
+      if(itemIndex === -1) return;
+
+      if (confirm("⚠️ Tem certeza que deseja EXCLUIR este anúncio?")) {
+        items.splice(itemIndex, 1);
         localStorage.setItem('unitroca_items', JSON.stringify(items));
         renderItems();
-        alert("✅ Anúncio marcado como concluído!");
-      } 
-      else if (opcao === '2') {
-        if (confirm("⚠️ Tem certeza que deseja EXCLUIR este anúncio?")) {
-          items.splice(itemIndex, 1);
-          localStorage.setItem('unitroca_items', JSON.stringify(items));
-          renderItems();
-          alert("🗑️ Anúncio excluído com sucesso.");
-        }
-      } 
-      else if (opcao === '3') {
-        const novoTitulo = prompt("Novo Título:", item.titulo);
-        if (novoTitulo && novoTitulo.trim() !== "") {
-          items[itemIndex].titulo = novoTitulo;
-        }
-        
-        const novaDesc = prompt("Nova Descrição:", item.descricao);
-        if (novaDesc && novaDesc.trim() !== "") {
-          items[itemIndex].descricao = novaDesc;
-        }
-        
-        localStorage.setItem('unitroca_items', JSON.stringify(items));
-        renderItems();
-        alert("✏️ Anúncio atualizado com sucesso!");
+        alert("🗑️ Anúncio excluído com sucesso.");
+        fecharModalManage();
       }
+    };
+
+    window.abrirEdicaoModal = function() {
+      if(!itemSendoGerenciado) return;
+      document.getElementById('editTituloModal').value = itemSendoGerenciado.titulo;
+      document.getElementById('editTamanhoModal').value = itemSendoGerenciado.tamanho || "";
+      document.getElementById('editDescricaoModal').value = itemSendoGerenciado.descricao;
+      fecharModalManage(); // Fecha modal de opções
+      document.getElementById('editModal').style.display = 'flex'; // Abre modal de edição
+    };
+
+    window.fecharModalEdit = function() {
+      document.getElementById('editModal').style.display = 'none';
+      itemSendoGerenciado = null;
+    };
+
+    window.salvarEdicaoModal = function() {
+      if(!itemSendoGerenciado) return;
+      const itemIndex = items.findIndex(i => i.id === itemSendoGerenciado.id);
+      if(itemIndex === -1) return;
+
+      const novoTitulo = document.getElementById('editTituloModal').value;
+      if (novoTitulo && novoTitulo.trim() !== "") {
+        items[itemIndex].titulo = novoTitulo;
+      }
+      
+      const novoTamanho = document.getElementById('editTamanhoModal').value;
+      if (novoTamanho !== null) {
+        items[itemIndex].tamanho = novoTamanho;
+      }
+      
+      const novaDesc = document.getElementById('editDescricaoModal').value;
+      if (novaDesc && novaDesc.trim() !== "") {
+        items[itemIndex].descricao = novaDesc;
+      }
+      
+      localStorage.setItem('unitroca_items', JSON.stringify(items));
+      renderItems();
+      alert("✏️ Anúncio atualizado com sucesso!");
+      fecharModalEdit();
     };
 
     itemForm.addEventListener('submit', (e) => {
@@ -567,7 +862,7 @@
 
       let finalImageUrl = imageUrlField;
       if (!finalImageUrl && defaultImageChoice !== 'img_nenhuma') {
-        finalImageUrl = defaultImages[defaultImageChoice];
+        finalImageUrl = defaultImageChoice;
       }
 
       const newItem = {
@@ -588,6 +883,7 @@
       renderItems();
 
       itemForm.reset();
+      imagePreviewContainer.style.display = 'none';
       
       const radioNenhuma = document.querySelector('input[name="default_image_choice"][value="img_nenhuma"]');
       if(radioNenhuma) radioNenhuma.checked = true;
@@ -597,6 +893,7 @@
 
     searchInput.addEventListener('input', renderItems);
     filterCategory.addEventListener('change', renderItems);
+    filterTamanho.addEventListener('change', renderItems);
 
     renderItems();
   </script>
