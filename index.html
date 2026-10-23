@@ -111,7 +111,7 @@
     }
     .password-toggle-group input {
       width: 100%;
-      padding-right: 40px; /* Espaço para o ícone */
+      padding-right: 40px;
     }
     .btn-toggle-password {
       position: absolute;
@@ -368,6 +368,8 @@
     .btn-danger:hover { background-color: #a71d2a; }
     .btn-muted { background-color: #6c757d; color: white; }
     .btn-muted:hover { background-color: #495057; }
+    .btn-edit { background-color: #17a2b8; color: white; }
+    .btn-edit:hover { background-color: #117a8b; }
 
     @keyframes modalFadeIn {
       from { opacity: 0; transform: translateY(-20px); }
@@ -561,6 +563,7 @@
       </div>
 
       <button type="button" class="btn btn-primary btn-manage-modal" onclick="salvarStatusFecharModal()">Salvar Status</button>
+      <button type="button" class="btn btn-edit btn-manage-modal" onclick="editarItemModal()">✏️ Editar Título, Tamanho e Descrição</button>
       <button type="button" class="btn btn-danger btn-manage-modal" onclick="excluirItemModal()">Excluir Anúncio Definitivamente</button>
       <button type="button" class="btn btn-muted btn-manage-modal" style="margin-top: 20px;" onclick="fecharManageModal()">Fechar</button>
     </div>
@@ -579,7 +582,7 @@
         whatsapp: '11988887777',
         imagem: 'Gemini_Generated_Image_7s170u7s170u7s17.jpeg',
         concluido: false,
-        senha: '0' // Item antigo (simulação) que poderia ter senha padrao
+        senha: '0' 
       },
       {
         id: 'mock_2',
@@ -646,10 +649,10 @@
       const input = document.getElementById(inputId);
       if (input.type === "password") {
         input.type = "text";
-        button.textContent = "🙈"; // Muda ícone
+        button.textContent = "🙈"; 
       } else {
         input.type = "password";
-        button.textContent = "👁️"; // Restaura ícone
+        button.textContent = "👁️"; 
       }
     };
 
@@ -717,7 +720,7 @@
     window.abrirModalPin = function(id) {
       itemSendoGerenciado = itensCadastrados.find(i => i.id === id);
       document.getElementById('modalPinDigitado').value = '';
-      document.getElementById('modalPinDigitado').type = "password"; // Garante que abra oculto
+      document.getElementById('modalPinDigitado').type = "password"; 
       document.querySelector('#pinModal .btn-toggle-password').textContent = "👁️";
       document.getElementById('pinModal').style.display = 'flex';
     };
@@ -743,12 +746,10 @@
         return;
       }
 
-      // Esconde a janela de PIN sem apagar a memória do item (sem chamar fecharModalPin)
       document.getElementById('pinModal').style.display = 'none'; 
       
-      // Prepara a segunda janela
       document.getElementById('modalConcluidoCheckbox').checked = itemSendoGerenciado.concluido;
-      document.getElementById('manageModal').style.display = 'flex'; // Abre modal de opções
+      document.getElementById('manageModal').style.display = 'flex'; 
     };
 
     window.fecharManageModal = function() {
@@ -757,7 +758,6 @@
     };
 
     window.toggleStatusModal = function() {
-       // Apenas visual na checkbox, a ação ocorre no salvar
     };
 
     window.salvarStatusFecharModal = function() {
@@ -767,6 +767,26 @@
       renderItems();
       fecharManageModal();
       alert(isChecked ? "✅ Anúncio marcado como doado/trocado!" : "✅ Anúncio reativado com sucesso!");
+    };
+    
+    window.editarItemModal = function() {
+      const novoTitulo = prompt("Edite o título do anúncio:", itemSendoGerenciado.titulo);
+      if(novoTitulo === null) return; 
+      
+      const novoTamanho = prompt("Edite o tamanho/ano do item:", itemSendoGerenciado.tamanho);
+      if(novoTamanho === null) return;
+      
+      const novaDescricao = prompt("Edite a descrição:", itemSendoGerenciado.descricao);
+      if(novaDescricao === null) return;
+      
+      itemSendoGerenciado.titulo = novoTitulo;
+      itemSendoGerenciado.tamanho = novoTamanho;
+      itemSendoGerenciado.descricao = novaDescricao;
+      
+      salvarNoLocalStorage();
+      renderItems();
+      fecharManageModal();
+      alert("✅ Anúncio atualizado com sucesso!");
     };
 
     window.excluirItemModal = function() {
@@ -804,11 +824,10 @@
         concluido: false
       };
 
-      itensCadastrados.unshift(novoItem); // Adiciona no topo
+      itensCadastrados.unshift(novoItem); 
       salvarNoLocalStorage();
       renderItems();
       
-      // Reseta o formulário
       this.reset();
       imagePreviewContainer.style.display = 'none';
       imagePreview.src = '';
